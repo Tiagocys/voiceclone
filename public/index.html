@@ -1,11 +1,44 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Voice Cloner</title>
 </head>
 <body>
-    UI simples
+    <h1>Alterador de Voz & Text-to-Speech</h1>
+    <form id="voice-form">
+        <textarea id="text" name="text" rows="4" cols="50" placeholder="Digite o texto aqui..."></textarea><br>
+        <label for="sample">Sample pronto:</label>
+        <select id="sample" name="sample">
+            <option value="">Nenhum</option>
+            <option value="morty.wav">Morty</option>
+        </select><br>
+        <label for="voice_upload">Ou envie sua voz:</label>
+        <input type="file" id="voice_upload" name="voice_upload" accept="audio/*"><br>
+        <button type="submit">Gerar áudio</button>
+    </form>
+    <audio id="player" controls style="display:none; margin-top: 1em;"></audio>
+    <script>
+        const form = document.getElementById('voice-form');
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = new FormData(form);
+            const res = await fetch('/synthesize', {
+                method: 'POST',
+                body: data
+            });
+            if (res.ok) {
+                const blob = await res.blob();
+                const url = URL.createObjectURL(blob);
+                const player = document.getElementById('player');
+                player.style.display = 'block';
+                player.src = url;
+                player.play();
+            } else {
+                alert('Erro ao gerar áudio');
+            }
+        });
+    </script>
 </body>
 </html>
